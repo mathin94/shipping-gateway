@@ -11,7 +11,6 @@ import (
 )
 
 func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
-	log.Info("Initializing database connection...")
 	// Load database configuration from viper
 	username := viper.GetString("db.user")
 	password := viper.GetString("db.password")

@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"shipping-gateway/internal/config"
 )
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	viperConfig := config.NewViper()
 	log := config.NewLogger(viperConfig)
+	app := config.NewGinEngine(viperConfig)
 	db := config.NewDatabase(viperConfig, log)
 	rds := config.InitRedis(viperConfig, log)
-	log.Infof("Database connection established successfully")
 	validate := config.NewValidator(viperConfig)
-	app := config.NewGinEngine(viperConfig)
 
 	config.Bootstrap(&config.BootstrapConfig{
 		DB:       db,

@@ -10,6 +10,15 @@ func NewGinEngine(config *viper.Viper) *gin.Engine {
 	app := gin.New()
 	app.Use(gin.Recovery())
 	app.Use(NewErrorHandler())
+
+	mode := config.GetString("web.mode")
+	switch mode {
+	case "release":
+		gin.SetMode(gin.ReleaseMode)
+	default:
+		gin.SetMode(gin.DebugMode)
+	}
+
 	// You can set app name in context or use it elsewhere as needed
 	return app
 }
