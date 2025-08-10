@@ -1,0 +1,25 @@
+web:
+  port: 30001
+  
+db:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: "secret123"
+  name: "shipping_aggregator"
+  debug: true
+  
+log:
+  level: info
+  console_enabled: true
+  file_path: logs/app.log
+  max_size: 10MB
+  max_backups: 5
+  max_age: 30
+  compress: true
+  
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: 
+  db: 0
