@@ -4,6 +4,7 @@ import "time"
 
 type ShipmentHistoryItem struct {
 	Note      string `json:"note"`
+	Message   string `json:"message"`
 	UpdatedAt string `json:"updated_at"`
 	Status    string `json:"status"`
 }
@@ -11,6 +12,11 @@ type ShipmentHistoryItem struct {
 type ShipmentAddressInfo struct {
 	ContactName string `json:"contact_name"`
 	Address     string `json:"address"`
+}
+
+type ShipmentTrackingResp struct {
+	Response
+	Data ShipmentTrackingResponse `json:"data"`
 }
 
 type ShipmentTrackingResponse struct {

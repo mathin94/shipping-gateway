@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type Area struct {
 	ID                    uint      `json:"id" gorm:"primaryKey"`
@@ -20,7 +23,7 @@ func (area *Area) TableName() string {
 }
 
 // BeforeCreate is a GORM hook that sets the CreatedAt timestamp
-func (area *Area) BeforeCreate() error {
+func (area *Area) BeforeCreate(tx *gorm.DB) error {
 	area.CreatedAt = time.Now()
 	area.UpdatedAt = time.Now()
 	return nil

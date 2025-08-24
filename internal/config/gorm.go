@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
+	"shipping-gateway/internal/entity"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
 	maxLifeTimeConnection := viper.GetInt("db.pool.lifetime")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, database)
-	logLevel := gormLogger.Silent
+	logLevel := gormLogger.Info
 	if viper.GetBool("db.debug") {
 		logLevel = gormLogger.Info
 	}
@@ -49,7 +50,20 @@ func NewDatabase(viper *viper.Viper, log *logrus.Logger) *gorm.DB {
 	connection.SetMaxOpenConns(maxConnection)
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 	log.Info("Database connection established successfully")
+
+	AutoMigrate(db,
+		entity.Area{},
+		entity.Courier{},
+		entity.CourierService{},
+		entity.ShipmentTrackingLog{},
+	)
 	return db
+}
+
+func AutoMigrate(db *gorm.DB, models ...interface{}) {
+	if err := db.AutoMigrate(models...); err != nil {
+		panic(fmt.Sprintf("failed to auto migrate: %v", err))
+	}
 }
 
 type logrusWriter struct {

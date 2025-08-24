@@ -11,7 +11,7 @@ db:
   debug: true
   
 log:
-  level: info
+  level: debug
   console_enabled: true
   file_path: logs/app.log
   max_size: 10MB
@@ -23,8 +23,8 @@ redis:
   host: 127.0.0.1
   port: 6379
   password: 
-  db: 0
+  db: 5
   
 biteship:
     base_url: "https://api.biteship.com"
-    api_key: "biteship_test.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQXpraWEgVGVzdGluZyIsInVzZXJJZCI6IjY4ODczMDc3ZTRhM2RiMDAxMjBlYzcwYSIsImlhdCI6MTc1MzY5MDc5N30.s1QcOe1g9aNkUMx4uN6Q8ZX9CxnVNolU2m6tNKoK-hE"
+    api_key: "biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQXpraWEiLCJ1c2VySWQiOiI2ODg3MzA3N2U0YTNkYjAwMTIwZWM3MGEiLCJpYXQiOjE3NTM5Mjk1MzZ9.4Yxst8-moRyvcO6NNTT2339zc3GBBTYKFNVePmcJLBA"

@@ -24,3 +24,17 @@ func (r *TrackingLogRepository) FindByWaybillAndCourierCode(db *gorm.DB, waybill
 	}
 	return &log, nil
 }
+
+func (r *TrackingLogRepository) CreateOrUpdate(db *gorm.DB, log *entity.ShipmentTrackingLog) error {
+	existingLog, err := r.FindByWaybillAndCourierCode(db, log.Waybill, log.CourierCode)
+	if err != nil {
+		return err
+	}
+
+	if existingLog != nil {
+		log.ID = existingLog.ID
+		return r.Update(db, log)
+	}
+
+	return r.Create(db, log)
+}

@@ -145,27 +145,25 @@ func (r RateResponse) ToCourierRateResponse() model.CourierRateResponse {
 }
 
 type ErrorResponse struct {
-	Success bool   `json:"success"`
-	Code    int    `json:"code"`
-	Error   string `json:"error"`
+	Success bool            `json:"success"`
+	Code    BiteshipErrCode `json:"code"`
+	Error   string          `json:"error"`
 }
 
-func (e ErrorResponse) GetHTTPStatusCode() int {
-	// Get Substring first 3 digit 
-	code := strconv.Itoa(e.Code)
-	if len(code) < 3 {
-		return 500 // Default to Internal Server Error if code is not valid
+// ToServiceResponse converts ErrorResponse to a ServiceResponse
+func (e ErrorResponse) ToServiceResponse() *model.ServiceResponse {
+	return &model.ServiceResponse{
+		StatusCode: e.Code.GetHTTPStatusCode(),
+		Message:    e.Error,
+		Data:       nil, // Assuming no data is returned in error response
 	}
-
-	iCode, _ := strconv.Atoi(code[:3])
-	return iCode
 }
 
 func (e ErrorResponse) IsEmptyData() bool {
 	return e.Code == ErrRateNoCourierAvailable
 }
 
-func NewErrorResponse(code int, err string) *ErrorResponse {
+func NewErrorResponse(code BiteshipErrCode, err string) *ErrorResponse {
 	return &ErrorResponse{
 		Success: false,
 		Code:    code,
@@ -199,9 +197,9 @@ type TrackingAdddress struct {
 
 // TrackingHistoryItem struct
 type TrackingHistoryItem struct {
-	Note      string `json:"note"`
-	UpdatedAt string `json:"updated_at"`
-	Status    string `json:"status"`
+	Note      string         `json:"note"`
+	UpdatedAt string         `json:"updated_at"`
+	Status    StatusTracking `json:"status"`
 }
 
 // TrackingResponse struct
@@ -238,8 +236,9 @@ func (t TrackingResponse) ToShipmentTrackingResponse() model.ShipmentTrackingRes
 	for _, item := range t.History {
 		resp.History = append(resp.History, model.ShipmentHistoryItem{
 			Note:      item.Note,
+			Message:   item.Status.GetMessage(),
+			Status:    item.Status.ToString(),
 			UpdatedAt: item.UpdatedAt,
-			Status:    item.Status,
 		})
 	}
 

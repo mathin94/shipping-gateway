@@ -22,8 +22,8 @@ const (
 	V1GetArea           = "/v1/maps/areas"
 	V1GetCourier        = "/v1/couriers"
 	V1GetCourierRates   = "/v1/rates/couriers"
-	V1TrackingByID      = "/v1/tracking/%s"
-	V1TrackingByWaybill = "/v1/tracking/%s/couriers/%s"
+	V1TrackingByID      = "/v1/trackings/%s"
+	V1TrackingByWaybill = "/v1/trackings/%s/couriers/%s"
 )
 
 func NewClient(cfg *viper.Viper, logger *logrus.Logger) *Client {
@@ -142,7 +142,7 @@ func (c *Client) GetCourierRates(request RateRequest) (resp *RateResponse, errRe
 	c.logger.Debugf("Requesting courier rates with request: %s", requestJSON)
 	_, bRes, err := c.PostRequest(V1GetCourierRates, request)
 	if err != nil {
-		c.logger.Errorf("Error getting courier rates: %v, biteship resp : %s", err, bRes)
+		c.logger.Errorf("Error getting courier rates: %v, biteship", err)
 		return nil, ErrorResponseFromBytes(bRes)
 	}
 
@@ -157,9 +157,14 @@ func (c *Client) GetCourierRates(request RateRequest) (resp *RateResponse, errRe
 func (c *Client) GetTrackingByWaybill(waybill, courier string) (resp *TrackingResponse, errResp *ErrorResponse) {
 	c.logger.Debugf("Requesting tracking by waybill: %s, courier: %s", waybill, courier)
 	endpoint := fmt.Sprintf(V1TrackingByWaybill, waybill, courier)
-	_, bRes, err := c.GetRequest(endpoint, nil)
+	statusCode, bRes, err := c.GetRequest(endpoint, nil)
 	if err != nil {
-		c.logger.Errorf("Error getting tracking by waybill: %v, biteship resp : %s", err, bRes)
+		if statusCode != http.StatusInternalServerError {
+			errResp := ErrorResponseFromBytes(bRes)
+			c.logger.Errorf("failed getting tracking by waybill: %v, biteship response: %s", err, string(bRes))
+			return nil, errResp
+		}
+		c.logger.Errorf("Error getting tracking by waybill: %v, biteship", err)
 		return nil, ErrorResponseFromBytes(bRes)
 	}
 

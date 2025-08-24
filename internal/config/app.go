@@ -30,16 +30,19 @@ func Bootstrap(config *BootstrapConfig) {
 
 	// setup repositories
 	areaRepository := repository.NewAreaRepository()
+	trackingLogRepository := repository.NewTrackingLogRepository()
 
 	//trackingLogRepository := repository.NewTrackingLogRepository()
 
 	// setup use cases
 	areaUseCase := usecase.NewAreaUseCase(biteshipClient, config.DB, config.Rds, areaRepository, config.Log)
 	shippingUseCase := usecase.NewShippingUseCase(config.DB, config.Log, config.Validate, areaUseCase, biteshipClient, config.Rds)
+	trackingUseCase := usecase.NewTrackingUseCase(config.DB, config.Log, biteshipClient, config.Rds, trackingLogRepository)
 
 	// setup controller
 	healthCheckController := http.NewHealthCheckController(config.Log)
 	courierRateController := http.NewCourierRateController(config.Log, shippingUseCase)
+	trackingController := http.NewTrackingController(config.Log, trackingUseCase)
 
 	// setup middleware
 	traceIDMiddleware := middleware.TraceIDMiddleware()
@@ -48,6 +51,7 @@ func Bootstrap(config *BootstrapConfig) {
 		App:                   config.App,
 		HealthCheckController: healthCheckController,
 		CourierRateController: courierRateController,
+		TrackingController:    trackingController,
 		TraceIDMiddleware:     traceIDMiddleware,
 	}
 

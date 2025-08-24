@@ -11,6 +11,7 @@ type RouteConfig struct {
 	// Add controller below
 	HealthCheckController *http.HealthCheckController
 	CourierRateController *http.CourierRateController
+	TrackingController    *http.TrackingController
 
 	// Add middleware below
 	TraceIDMiddleware gin.HandlerFunc
@@ -39,4 +40,8 @@ func (c *RouteConfig) SetupInternalRoute() {
 	// Shipping routes
 	shippingV1 := v1.Group("/shipping")
 	shippingV1.POST("/rates", c.CourierRateController.GetCourierRates)
+
+	// Tracking routes
+	trackingV1 := v1.Group("/tracking")
+	trackingV1.GET("/:waybill/courier/:courier", c.TrackingController.GetTrackingByWaybill)
 }
